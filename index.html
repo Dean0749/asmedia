@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASMedia 產品查找系統 - 2024 Q4</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .card-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%);
+        }
+        .highlight {
+            color: #2563eb;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+
+    <nav class="bg-blue-900 text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold tracking-wider">ASMEDIA 產品規格查找系統 <span class="text-sm font-normal opacity-75">2024 Q4 Update</span></h1>
+        </div>
+    </nav>
+
+    <main class="container mx-auto p-4 md:p-8">
+        
+        <!-- 搜尋與過濾區塊 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            
+            <!-- 直接搜尋 -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <label class="block text-sm font-medium text-gray-700 mb-2">直接搜尋型號</label>
+                <input type="text" id="modelSearch" placeholder="例如: ASM4242, ASM2824..." 
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+
+            <!-- 類別過濾 -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <label class="block text-sm font-medium text-gray-700 mb-2">產品類別</label>
+                <select id="categoryFilter" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    <option value="all">全部產品</option>
+                    <option value="USB Host">USB Host (主控)</option>
+                    <option value="USB Hub">USB Hub / Dock</option>
+                    <option value="PCIe Switch">PCIe Packet Switch</option>
+                    <option value="Storage">Storage Bridge / SATA</option>
+                </select>
+            </div>
+
+            <!-- 快速篩選按鈕 -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col justify-end">
+                <button onclick="resetFilters()" class="text-blue-600 hover:text-blue-800 text-sm font-medium transition">清除所有過濾條件</button>
+            </div>
+        </div>
+
+        <!-- 規格快速說明 (術語) -->
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-8 rounded-r-lg text-sm text-blue-800">
+            <strong>💡 術語說明：</strong> 
+            <span class="ml-2">Upstream (上行): 連接 CPU/主機端 | Downstream (下行): 連接週邊裝置 | MP: 已量產 | Sampling: 樣片階段</span>
+        </div>
+
+        <!-- 結果清單 -->
+        <div id="resultsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- 動態生成卡片 -->
+        </div>
+
+        <!-- 無結果顯示 -->
+        <div id="noResults" class="hidden text-center py-20 text-gray-500">
+            <p class="text-xl">找不到符合條件的產品型號</p>
+        </div>
+    </main>
+
+    <script>
+        // 從 Roadmap 文件中整理出的產品資料
+        const products = [
+            // USB Host
+            { id: "ASM4242", cat: "USB Host", upstream: "PCIe Gen4 x4", downstream: "2 ports USB4 (40G)", status: "MP", features: "Support DP1.4a, Certified" },
+            { id: "ASM3242", cat: "USB Host", upstream: "PCIe Gen3 x4", downstream: "1 port USB 3.2 (20G)", status: "MP", features: "Modern Standby support" },
+            { id: "ASM3142", cat: "USB Host", upstream: "PCIe Gen3 x2", downstream: "2 ports USB 3.2 (10G)", status: "MP", features: "Multiple-IN support" },
+            
+            // USB Hub/Dock
+            { id: "ASM4074", cat: "USB Hub", upstream: "1 port USB4 (40G)", downstream: "2x USB4 + 1x 20G + 3x 10G", status: "2025 Q4 Sampling", features: "Integrated PD controller" },
+            { id: "ASM3074C", cat: "USB Hub", upstream: "USB 3.2 (20G)", downstream: "1x 20G + 2x 10G", status: "MP", features: "Optimized for Type-C Docks" },
+            { id: "ASM2074", cat: "USB Hub", upstream: "USB 3.2 (10G)", downstream: "4 ports USB 10G", status: "MP", features: "SuperSpeedPlus" },
+            
+            // PCIe Switch
+            { id: "ASM2824", cat: "PCIe Switch", upstream: "PCIe Gen3 x8", downstream: "Up to 16 lanes / 12 ports", status: "MP", features: "High density I/O expansion" },
+            { id: "ASM2812", cat: "PCIe Switch", upstream: "PCIe Gen3 x4", downstream: "Up to 8 lanes / 6 ports", status: "MP", features: "NVMe SSD expansion" },
+            { id: "ASM2806", cat: "PCIe Switch", upstream: "PCIe Gen3 x2", downstream: "Up to 4 lanes / 4 ports", status: "MP", features: "Low power consumption" },
+            { id: "ASM5812", cat: "PCIe Switch", upstream: "PCIe Gen4 x4", downstream: "Up to 8 lanes / 4 ports", status: "Sampling", features: "Industrial Temp (-40~85°C)" },
+            { id: "ASM1806", cat: "PCIe Switch", upstream: "PCIe Gen2 x2", downstream: "4 lanes / 4 ports", status: "MP", features: "Cost-effective Gen2 switch" },
+            
+            // Storage
+            { id: "ASM2464PD", cat: "Storage", upstream: "USB4 40G", downstream: "PCIe Gen4 x4 (NVMe)", status: "MP", features: "Built-in PD, highly integrated" },
+            { id: "ASM1166", cat: "Storage", upstream: "PCIe Gen3 x2", downstream: "6 ports SATA 6G", status: "MP", features: "Support AHCI, Modern Standby" },
+            { id: "ASM1164", cat: "Storage", upstream: "PCIe Gen3 x2", downstream: "4 ports SATA 6G", status: "MP", features: "Stable SATA expansion" },
+            { id: "ASM1061", cat: "Storage", upstream: "PCIe Gen2 x1", downstream: "2 ports SATA 6G", status: "MP", features: "Classic SATA controller" }
+        ];
+
+        const resultsGrid = document.getElementById('resultsGrid');
+        const modelSearch = document.getElementById('modelSearch');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const noResults = document.getElementById('noResults');
+
+        function renderProducts() {
+            const searchTerm = modelSearch.value.toUpperCase();
+            const category = categoryFilter.value;
+
+            const filtered = products.filter(p => {
+                const matchModel = p.id.includes(searchTerm);
+                const matchCat = category === 'all' || p.cat === category;
+                return matchModel && matchCat;
+            });
+
+            resultsGrid.innerHTML = '';
+            
+            if (filtered.length === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+                filtered.forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = "card-gradient p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition transform hover:-translate-y-1";
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start mb-4">
+                            <h2 class="text-2xl font-black text-gray-800">${p.id}</h2>
+                            <span class="px-3 py-1 text-xs font-bold rounded-full ${p.status === 'MP' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">
+                                ${p.status}
+                            </span>
+                        </div>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-center">
+                                <span class="w-24 text-gray-500 font-medium">類別</span>
+                                <span class="text-gray-900">${p.cat}</span>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="w-24 text-gray-500 font-medium pt-1">Upstream</span>
+                                <span class="flex-1 text-blue-600 font-semibold bg-blue-50 px-2 py-1 rounded leading-tight">${p.upstream}</span>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="w-24 text-gray-500 font-medium pt-1">Downstream</span>
+                                <span class="flex-1 text-purple-600 font-semibold bg-purple-50 px-2 py-1 rounded leading-tight">${p.downstream}</span>
+                            </div>
+                            <div class="pt-2 border-t border-gray-200">
+                                <p class="text-xs text-gray-500 italic">${p.features}</p>
+                            </div>
+                        </div>
+                    `;
+                    resultsGrid.appendChild(card);
+                });
+            }
+        }
+
+        function resetFilters() {
+            modelSearch.value = '';
+            categoryFilter.value = 'all';
+            renderProducts();
+        }
+
+        modelSearch.addEventListener('input', renderProducts);
+        categoryFilter.addEventListener('change', renderProducts);
+
+        // 初始渲染
+        window.onload = renderProducts;
+    </script>
+</body>
+</html>
