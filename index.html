@@ -3,165 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASMedia 產品查找系統 - 2024 Q4</title>
+    <title>ASMedia 產品規格查找系統 - 完整清單版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .card-gradient {
-            background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%);
-        }
-        .highlight {
-            color: #2563eb;
-            font-weight: bold;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        body { font-family: 'Inter', 'Microsoft JhengHei', sans-serif; }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(0, 0, 0, 0.05); }
+        .status-badge { position: absolute; top: 1rem; right: 1rem; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        .status-mp { background: #dcfce7; color: #166534; }
+        .status-sampling { background: #fef9c3; color: #854d0e; }
+        .status-dev { background: #e0e7ff; color: #3730a3; }
+        .speed-tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: #f1f5f9; color: #475569; }
+        .filter-select { @apply w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500; }
+        .label-heading { @apply text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block; }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen font-sans">
+<body class="bg-[#f8fafc] min-h-screen">
 
-    <nav class="bg-blue-900 text-white p-4 shadow-lg">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold tracking-wider">ASMEDIA 產品規格查找系統 <span class="text-sm font-normal opacity-75">2024 Q4 Update</span></h1>
+    <nav class="bg-slate-900 text-white px-6 py-4 sticky top-0 z-50 shadow-2xl border-b-4 border-blue-600">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center">
+                <div class="bg-blue-600 text-white font-black italic px-3 py-1 rounded mr-3">ASMEDIA</div>
+                <div>
+                    <h1 class="text-xl font-extrabold tracking-tight">產品規格查找系統</h1>
+                    <p class="text-[10px] text-blue-300 font-medium opacity-80 uppercase">Roadmap Full Database (Revision 1.5)</p>
+                </div>
+            </div>
+            <div id="clock" class="text-xs font-mono text-gray-400 hidden md:block"></div>
         </div>
     </nav>
 
-    <main class="container mx-auto p-4 md:p-8">
-        
-        <!-- 搜尋與過濾區塊 -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            
-            <!-- 直接搜尋 -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                <label class="block text-sm font-medium text-gray-700 mb-2">直接搜尋型號</label>
-                <input type="text" id="modelSearch" placeholder="例如: ASM4242, ASM2824..." 
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+    <main class="max-w-7xl mx-auto p-4 md:p-8">
+        <!-- 搜尋與多重過濾面板 -->
+        <div class="glass-card rounded-2xl shadow-sm border border-slate-200 p-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div>
+                    <label class="label-heading">上行介面 (USP)</label>
+                    <select id="uspFilter" class="filter-select">
+                        <option value="all">全部 USP</option>
+                        <option value="PCIe Gen5">PCIe Gen5</option>
+                        <option value="PCIe Gen4">PCIe Gen4</option>
+                        <option value="PCIe Gen3">PCIe Gen3</option>
+                        <option value="PCIe Gen2">PCIe Gen2</option>
+                        <option value="USB4 80G">USB4 80G</option>
+                        <option value="USB4 40G">USB4 40G</option>
+                        <option value="USB 20G">USB 20G</option>
+                        <option value="USB 10G">USB 10G</option>
+                        <option value="USB 5G">USB 5G</option>
+                        <option value="SATA 6G">SATA 6G</option>
+                        <option value="HDMI 1.4">HDMI 1.4</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="label-heading">下行/功能 (DSP)</label>
+                    <select id="dspFilter" class="filter-select">
+                        <option value="all">全部 DSP</option>
+                        <option value="USB4 80G">USB4 80G</option>
+                        <option value="USB4 40G">USB4 40G</option>
+                        <option value="USB 20G">USB 20G</option>
+                        <option value="USB 10G">USB 10G</option>
+                        <option value="USB 5G">USB 5G</option>
+                        <option value="PCIe NVMe">PCIe NVMe / Device</option>
+                        <option value="SATA">SATA Drive / 2 Bay</option>
+                        <option value="24 PHYs/Lanes">24 PHYs / Lanes</option>
+                        <option value="12 PHYs/Lanes">12 PHYs / Lanes</option>
+                        <option value="6-8 PHYs/Lanes">6-8 PHYs / Lanes</option>
+                        <option value="Redriver/Mux">Redriver / Mux</option>
+                    </select>
+                </div>
+                <div class="lg:col-span-2">
+                    <label class="label-heading">關鍵字搜尋 (型號、PHY 數量、功能描述)</label>
+                    <input type="text" id="keywordSearch" placeholder="例如: 2824, 2464, Type-C, mux..." 
+                        class="w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
             </div>
-
-            <!-- 類別過濾 -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                <label class="block text-sm font-medium text-gray-700 mb-2">產品類別</label>
-                <select id="categoryFilter" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    <option value="all">全部產品</option>
-                    <option value="USB Host">USB Host (主控)</option>
-                    <option value="USB Hub">USB Hub / Dock</option>
-                    <option value="PCIe Switch">PCIe Packet Switch</option>
-                    <option value="Storage">Storage Bridge / SATA</option>
-                </select>
-            </div>
-
-            <!-- 快速篩選按鈕 -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col justify-end">
-                <button onclick="resetFilters()" class="text-blue-600 hover:text-blue-800 text-sm font-medium transition">清除所有過濾條件</button>
-            </div>
         </div>
 
-        <!-- 規格快速說明 (術語) -->
-        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-8 rounded-r-lg text-sm text-blue-800">
-            <strong>💡 術語說明：</strong> 
-            <span class="ml-2">Upstream (上行): 連接 CPU/主機端 | Downstream (下行): 連接週邊裝置 | MP: 已量產 | Sampling: 樣片階段</span>
+        <div class="mb-4 px-2 flex justify-between items-center text-sm">
+            <div class="font-bold text-slate-500">符合條件: <span id="matchCount" class="text-blue-600">0</span> 顆晶片</div>
+            <button onclick="resetFilters()" class="text-blue-600 hover:underline font-bold text-xs">重設所有過濾</button>
         </div>
 
-        <!-- 結果清單 -->
-        <div id="resultsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- 動態生成卡片 -->
-        </div>
-
-        <!-- 無結果顯示 -->
-        <div id="noResults" class="hidden text-center py-20 text-gray-500">
-            <p class="text-xl">找不到符合條件的產品型號</p>
-        </div>
+        <div id="productGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <div id="emptyState" class="hidden text-center py-20 text-slate-400 font-bold">查無符合條件的晶片</div>
     </main>
 
     <script>
-        // 從 Roadmap 文件中整理出的產品資料
         const products = [
-            // USB Host
-            { id: "ASM4242", cat: "USB Host", upstream: "PCIe Gen4 x4", downstream: "2 ports USB4 (40G)", status: "MP", features: "Support DP1.4a, Certified" },
-            { id: "ASM3242", cat: "USB Host", upstream: "PCIe Gen3 x4", downstream: "1 port USB 3.2 (20G)", status: "MP", features: "Modern Standby support" },
-            { id: "ASM3142", cat: "USB Host", upstream: "PCIe Gen3 x2", downstream: "2 ports USB 3.2 (10G)", status: "MP", features: "Multiple-IN support" },
-            
-            // USB Hub/Dock
-            { id: "ASM4074", cat: "USB Hub", upstream: "1 port USB4 (40G)", downstream: "2x USB4 + 1x 20G + 3x 10G", status: "2025 Q4 Sampling", features: "Integrated PD controller" },
-            { id: "ASM3074C", cat: "USB Hub", upstream: "USB 3.2 (20G)", downstream: "1x 20G + 2x 10G", status: "MP", features: "Optimized for Type-C Docks" },
-            { id: "ASM2074", cat: "USB Hub", upstream: "USB 3.2 (10G)", downstream: "4 ports USB 10G", status: "MP", features: "SuperSpeedPlus" },
-            
-            // PCIe Switch
-            { id: "ASM2824", cat: "PCIe Switch", upstream: "PCIe Gen3 x8", downstream: "Up to 16 lanes / 12 ports", status: "MP", features: "High density I/O expansion" },
-            { id: "ASM2812", cat: "PCIe Switch", upstream: "PCIe Gen3 x4", downstream: "Up to 8 lanes / 6 ports", status: "MP", features: "NVMe SSD expansion" },
-            { id: "ASM2806", cat: "PCIe Switch", upstream: "PCIe Gen3 x2", downstream: "Up to 4 lanes / 4 ports", status: "MP", features: "Low power consumption" },
-            { id: "ASM5812", cat: "PCIe Switch", upstream: "PCIe Gen4 x4", downstream: "Up to 8 lanes / 4 ports", status: "Sampling", features: "Industrial Temp (-40~85°C)" },
-            { id: "ASM1806", cat: "PCIe Switch", upstream: "PCIe Gen2 x2", downstream: "4 lanes / 4 ports", status: "MP", features: "Cost-effective Gen2 switch" },
-            
-            // Storage
-            { id: "ASM2464PD", cat: "Storage", upstream: "USB4 40G", downstream: "PCIe Gen4 x4 (NVMe)", status: "MP", features: "Built-in PD, highly integrated" },
-            { id: "ASM1166", cat: "Storage", upstream: "PCIe Gen3 x2", downstream: "6 ports SATA 6G", status: "MP", features: "Support AHCI, Modern Standby" },
-            { id: "ASM1164", cat: "Storage", upstream: "PCIe Gen3 x2", downstream: "4 ports SATA 6G", status: "MP", features: "Stable SATA expansion" },
-            { id: "ASM1061", cat: "Storage", upstream: "PCIe Gen2 x1", downstream: "2 ports SATA 6G", status: "MP", features: "Classic SATA controller" }
+            // --- USB Host Controllers ---
+            { id: "ASM5342", cat: "Host", usp: "PCIe Gen5 x4", dsp: "USB4 80G (2 ports)", speed: "80G", status: "Sampling", features: "USB4 80G Host, 2 lanes" },
+            { id: "ASM5341", cat: "Host", usp: "PCIe Gen5 x4", dsp: "USB4 80G (1 port)", speed: "80G", status: "Sampling", features: "USB4 80G Host, 2 lanes" },
+            { id: "ASM5242", cat: "Host", usp: "PCIe Gen4 x4", dsp: "USB4 80G (2 ports)", speed: "80G", status: "Sampling", features: "USB4 80G Host, 2 lanes" },
+            { id: "ASM4242", cat: "Host", usp: "PCIe Gen4 x4", dsp: "USB4 40G (2 ports)", speed: "40G", status: "MP", features: "USB4 40G Host, 2 lanes" },
+            { id: "ASM3241", cat: "Host", usp: "PCIe Gen3 x2", dsp: "USB 20G (1 port)", speed: "20G", status: "MP", features: "USB3.2 20G Host, 2 lanes" },
+            { id: "ASM3242", cat: "Host", usp: "PCIe Gen3 x2", dsp: "USB 10G (1 port)", speed: "10G", status: "MP", features: "USB3.2 10G Host, 2 lanes" },
+            { id: "ASM3142", cat: "Host", usp: "PCIe Gen3 x2", dsp: "USB 5G (2 ports)", speed: "5G", status: "MP", features: "USB3.2 5G Host, 2 lanes" },
+            { id: "ASM3042", cat: "Host", usp: "PCIe Gen3 x2", dsp: "USB 5G (2 ports)", speed: "5G", status: "MP", features: "USB3.2 5G Host, 2 lanes" },
+
+            // --- USB Hub ---
+            { id: "ASM5074", cat: "Hub", usp: "USB4 80G", dsp: "4 ports USB4/USB3", speed: "80G", status: "Dev", features: "USB4 80G Dock, 4 ports" },
+            { id: "ASM3074", cat: "Hub", usp: "USB 20G", dsp: "4 ports Hub", speed: "20G", status: "MP", features: "USB3.2 20G Hub, 4 ports" },
+            { id: "ASM2074", cat: "Hub", usp: "USB 10G", dsp: "4 ports Hub", speed: "10G", status: "MP", features: "USB3.2 10G Hub, 4 ports" },
+            { id: "ASM1074", cat: "Hub", usp: "USB 5G", dsp: "4 ports Hub", speed: "5G", status: "MP", features: "USB3.2 5G Hub, 4 ports" },
+            { id: "ASM1174", cat: "Hub", usp: "USB 5G", dsp: "4 ports Hub", speed: "5G", status: "MP", features: "USB3.2 5G Hub, 4 ports" },
+            { id: "ASM1174A", cat: "Hub", usp: "USB 5G", dsp: "4 ports Hub", speed: "5G", status: "MP", features: "USB3.2 5G Hub, 4 ports" },
+
+            // --- USB Device Bridge ---
+            { id: "ASM2564PDX", cat: "Bridge", usp: "USB4 80G", dsp: "PCIe NVMe (Type-C)", speed: "80G", status: "Sampling", features: "USB4 80G to PCIe, Type-C" },
+            { id: "ASM2564PD", cat: "Bridge", usp: "USB4 80G", dsp: "PCIe NVMe (Type-C)", speed: "80G", status: "Sampling", features: "USB4 80G to PCIe, Type-C" },
+            { id: "ASM2464PDX", cat: "Bridge", usp: "USB4 40G", dsp: "PCIe NVMe (Type-C)", speed: "40G", status: "MP", features: "USB4 40G to PCIe, Type-C" },
+            { id: "ASM2464PD", cat: "Bridge", usp: "USB4 40G", dsp: "PCIe NVMe (Type-C)", speed: "40G", status: "MP", features: "USB4 40G to PCIe, Type-C" },
+            { id: "ASM2364", cat: "Bridge", usp: "USB4 40G", dsp: "PCIe NVMe (Type-C)", speed: "40G", status: "MP", features: "USB4 40G to PCIe, Type-C" },
+            { id: "ASM2362", cat: "Bridge", usp: "USB4 40G", dsp: "PCIe NVMe (Type-C)", speed: "40G", status: "MP", features: "USB4 40G to PCIe, Type-C" },
+            { id: "ASM1352R", cat: "Bridge", usp: "USB 20G", dsp: "PCIe NVMe", speed: "20G", status: "MP", features: "USB 10G/20G to PCIe NVMe" },
+            { id: "ASM1153", cat: "Bridge", usp: "USB 10G", dsp: "2 bay SATA", speed: "10G", status: "MP", features: "USB 10G to 2 bay SATA drive" },
+            { id: "ASM1153E", cat: "Bridge", usp: "USB 10G", dsp: "SATA", speed: "10G", status: "MP", features: "USB 10G to SATA drive" },
+            { id: "ASM225CM", cat: "Bridge", usp: "USB 5G", dsp: "SATA (Type-C)", speed: "5G", status: "MP", features: "USB 5G Type-C to SATA drive" },
+
+            // --- Signaling ---
+            { id: "ASM1480", cat: "Signaling", usp: "PCIe Gen3", dsp: "1:2 Mux (8G)", speed: "8G", status: "MP", features: "PCIe Mux, 1:2, 4ch mux, 8G" },
+            { id: "ASM2480B", cat: "Signaling", usp: "PCIe Gen4", dsp: "1:2 Mux (16G)", speed: "16G", status: "MP", features: "PCIe Mux, 1:2, 4ch mux, 16G" },
+            { id: "ASM1467", cat: "Signaling", usp: "PCIe Gen2", dsp: "Redriver (1 lane)", speed: "5G", status: "MP", features: "PCIe Repeater, 1 lane, Gen2 redriver" },
+            { id: "ASM1468", cat: "Signaling", usp: "PCIe Gen3", dsp: "Redriver (2 lanes)", speed: "8G", status: "MP", features: "PCIe Repeater, 2 lanes, Gen3 redriver" },
+            { id: "ASM1466", cat: "Signaling", usp: "SATA 6G", dsp: "Redriver (1 port)", speed: "6G", status: "MP", features: "SATA Repeater, 1 port, 6G redriver" },
+            { id: "ASM1442K", cat: "Signaling", usp: "HDMI 1.4", dsp: "Level-shifter", speed: "3.4G", status: "MP", features: "HDMI 1.4 Level-shifter (1.05V <-> 3.3V)" },
+
+            // --- PCIe Switch (Gen4/5) ---
+            { id: "ASMx824", cat: "Switch", usp: "PCIe Gen5", dsp: "24 lanes / 12 ports", speed: "Gen5", status: "Dev", features: "PCIe Packet Switch, 24 lanes, 12 downstream ports" },
+            { id: "ASMx812X", cat: "Switch", usp: "PCIe Gen5", dsp: "24 lanes / 12 ports", speed: "Gen5", status: "Dev", features: "PCIe Packet Switch, 24 lanes, 12 downstream ports" },
+            { id: "ASMx812A", cat: "Switch", usp: "PCIe Gen5", dsp: "24 lanes / 12 ports", speed: "Gen5", status: "Dev", features: "PCIe Packet Switch, 24 lanes, 12 downstream ports" },
+            { id: "ASMx812I", cat: "Switch", usp: "PCIe Gen5", dsp: "16 lanes / 12 ports", speed: "Gen5", status: "Dev", features: "PCIe Packet Switch, 16 lanes, 12 downstream ports" },
+            { id: "ASMx812", cat: "Switch", usp: "PCIe Gen5", dsp: "12 lanes / 6 ports", speed: "Gen5", status: "Dev", features: "PCIe Packet Switch, 12 lanes, 6 downstream ports" },
+            { id: "ASMx806A", cat: "Switch", usp: "PCIe Gen5", dsp: "24 lanes / 8 ports", speed: "Gen5", status: "Dev", features: "PCIe Packet Switch, 24 lanes, 8 downstream ports" },
+            { id: "ASMx806I", cat: "Switch", usp: "PCIe Gen5", dsp: "12 lanes / 4 ports", speed: "Gen5", status: "Dev", features: "PCIe Packet Switch, 12 lanes, 4 downstream ports" },
+            { id: "ASMx806", cat: "Switch", usp: "PCIe Gen5", dsp: "6 lanes / 4 ports", speed: "Gen5", status: "Dev", features: "PCIe Packet Switch, 6 lanes, 4 downstream ports" },
+
+            // --- PCIe Switch (Gen3) ---
+            { id: "ASM2824I", cat: "Switch", usp: "PCIe Gen3", dsp: "24 PHYs", speed: "Gen3", status: "MP", features: "PCIe Packet Switch (Gen3), 24 PHYs" },
+            { id: "ASM2824", cat: "Switch", usp: "PCIe Gen3", dsp: "24 PHYs", speed: "Gen3", status: "MP", features: "PCIe Packet Switch (Gen3), 24 PHYs" },
+            { id: "ASM2812X", cat: "Switch", usp: "PCIe Gen3", dsp: "12 PHYs", speed: "Gen3", status: "MP", features: "PCIe Packet Switch (Gen3), 12 PHYs" },
+            { id: "ASM2812A", cat: "Switch", usp: "PCIe Gen3", dsp: "12 PHYs", speed: "Gen3", status: "MP", features: "PCIe Packet Switch (Gen3), 12 PHYs" },
+            { id: "ASM2812I", cat: "Switch", usp: "PCIe Gen3", dsp: "12 PHYs", speed: "Gen3", status: "MP", features: "PCIe Packet Switch (Gen3), 12 PHYs" },
+            { id: "ASM2812", cat: "Switch", usp: "PCIe Gen3", dsp: "12 PHYs", speed: "Gen3", status: "MP", features: "PCIe Packet Switch (Gen3), 12 PHYs" },
+            { id: "ASM2806A", cat: "Switch", usp: "PCIe Gen3", dsp: "6 PHYs", speed: "Gen3", status: "MP", features: "PCIe Packet Switch (Gen3), 6 PHYs" },
+            { id: "ASM2806I", cat: "Switch", usp: "PCIe Gen3", dsp: "6 PHYs", speed: "Gen3", status: "MP", features: "PCIe Packet Switch (Gen3), 6 PHYs" },
+            { id: "ASM2806", cat: "Switch", usp: "PCIe Gen3", dsp: "6 PHYs", speed: "Gen3", status: "MP", features: "PCIe Packet Switch (Gen3), 6 PHYs" },
+
+            // --- PCIe Switch (Gen2) ---
+            { id: "ASM1824I", cat: "Switch", usp: "PCIe Gen2", dsp: "24 PHYs", speed: "Gen2", status: "MP", features: "PCIe Packet Switch (Gen2), 24 PHYs" },
+            { id: "ASM1824", cat: "Switch", usp: "PCIe Gen2", dsp: "24 PHYs", speed: "Gen2", status: "MP", features: "PCIe Packet Switch (Gen2), 24 PHYs" },
+            { id: "ASM1812X", cat: "Switch", usp: "PCIe Gen2", dsp: "12 PHYs", speed: "Gen2", status: "MP", features: "PCIe Packet Switch (Gen2), 12 PHYs" },
+            { id: "ASM1812A", cat: "Switch", usp: "PCIe Gen2", dsp: "12 PHYs", speed: "Gen2", status: "MP", features: "PCIe Packet Switch (Gen2), 12 PHYs" },
+            { id: "ASM1812I", cat: "Switch", usp: "PCIe Gen2", dsp: "12 PHYs", speed: "Gen2", status: "MP", features: "PCIe Packet Switch (Gen2), 12 PHYs" },
+            { id: "ASM1812", cat: "Switch", usp: "PCIe Gen2", dsp: "12 PHYs", speed: "Gen2", status: "MP", features: "PCIe Packet Switch (Gen2), 12 PHYs" },
+            { id: "ASM1806A", cat: "Switch", usp: "PCIe Gen2", dsp: "6 PHYs", speed: "Gen2", status: "MP", features: "PCIe Packet Switch (Gen2), 6 PHYs" },
+            { id: "ASM1806I", cat: "Switch", usp: "PCIe Gen2", dsp: "6 PHYs", speed: "Gen2", status: "MP", features: "PCIe Packet Switch (Gen2), 6 PHYs" },
+            { id: "ASM1806", cat: "Switch", usp: "PCIe Gen2", dsp: "6 PHYs", speed: "Gen2", status: "MP", features: "PCIe Packet Switch (Gen2), 6 PHYs" },
+            { id: "ASM1187e", cat: "Switch", usp: "PCIe Gen2", dsp: "8 PHYs", speed: "Gen2", status: "MP", features: "PCIe Switch, 8 PHYs" },
+            { id: "ASM1184e", cat: "Switch", usp: "PCIe Gen2", dsp: "5 PHYs", speed: "Gen2", status: "MP", features: "PCIe Switch, 5 PHYs" },
+            { id: "ASM1182e", cat: "Switch", usp: "PCIe Gen2", dsp: "3 PHYs", speed: "Gen2", status: "MP", features: "PCIe Switch, 3 PHYs" }
         ];
 
-        const resultsGrid = document.getElementById('resultsGrid');
-        const modelSearch = document.getElementById('modelSearch');
-        const categoryFilter = document.getElementById('categoryFilter');
-        const noResults = document.getElementById('noResults');
-
-        function renderProducts() {
-            const searchTerm = modelSearch.value.toUpperCase();
-            const category = categoryFilter.value;
+        function render() {
+            const usp = document.getElementById('uspFilter').value;
+            const dsp = document.getElementById('dspFilter').value;
+            const query = document.getElementById('keywordSearch').value.toUpperCase();
 
             const filtered = products.filter(p => {
-                const matchModel = p.id.includes(searchTerm);
-                const matchCat = category === 'all' || p.cat === category;
-                return matchModel && matchCat;
+                const matchUsp = usp === 'all' || p.usp.includes(usp);
+                
+                // DSP 複雜過濾邏輯
+                let matchDsp = true;
+                if (dsp !== 'all') {
+                    if (dsp === '24 PHYs/Lanes') matchDsp = p.dsp.includes('24');
+                    else if (dsp === '12 PHYs/Lanes') matchDsp = p.dsp.includes('12') || p.dsp.includes('16');
+                    else if (dsp === '6-8 PHYs/Lanes') matchDsp = (p.dsp.includes('6') || p.dsp.includes('8') || p.dsp.includes('5') || p.dsp.includes('3')) && !p.dsp.includes('16');
+                    else if (dsp === 'PCIe NVMe') matchDsp = p.dsp.includes('NVMe') || p.dsp.includes('PCIe');
+                    else if (dsp === 'Redriver/Mux') matchDsp = p.dsp.includes('Mux') || p.dsp.includes('redriver') || p.dsp.includes('Level');
+                    else matchDsp = p.dsp.includes(dsp);
+                }
+
+                const matchKeyword = p.id.includes(query) || 
+                                   p.features.toUpperCase().includes(query) || 
+                                   p.usp.toUpperCase().includes(query) || 
+                                   p.dsp.toUpperCase().includes(query);
+                
+                return matchUsp && matchDsp && matchKeyword;
             });
 
-            resultsGrid.innerHTML = '';
-            
+            const grid = document.getElementById('productGrid');
+            const count = document.getElementById('matchCount');
+            const empty = document.getElementById('emptyState');
+
+            grid.innerHTML = '';
+            count.innerText = filtered.length;
+
             if (filtered.length === 0) {
-                noResults.classList.remove('hidden');
+                empty.classList.remove('hidden');
             } else {
-                noResults.classList.add('hidden');
+                empty.classList.add('hidden');
                 filtered.forEach(p => {
-                    const card = document.createElement('div');
-                    card.className = "card-gradient p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition transform hover:-translate-y-1";
-                    card.innerHTML = `
-                        <div class="flex justify-between items-start mb-4">
-                            <h2 class="text-2xl font-black text-gray-800">${p.id}</h2>
-                            <span class="px-3 py-1 text-xs font-bold rounded-full ${p.status === 'MP' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">
-                                ${p.status}
-                            </span>
-                        </div>
-                        <div class="space-y-3 text-sm">
-                            <div class="flex items-center">
-                                <span class="w-24 text-gray-500 font-medium">類別</span>
-                                <span class="text-gray-900">${p.cat}</span>
+                    const statusClass = `status-${p.status.toLowerCase()}`;
+                    grid.innerHTML += `
+                        <div class="glass-card rounded-xl p-6 relative hover:shadow-xl hover:border-blue-400 transition-all border border-slate-100">
+                            <div class="status-badge ${statusClass}">${p.status}</div>
+                            <div class="mb-4">
+                                <span class="text-[9px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase tracking-widest">${p.cat}</span>
+                                <h3 class="text-2xl font-black text-slate-800 mt-1">${p.id}</h3>
                             </div>
-                            <div class="flex items-start">
-                                <span class="w-24 text-gray-500 font-medium pt-1">Upstream</span>
-                                <span class="flex-1 text-blue-600 font-semibold bg-blue-50 px-2 py-1 rounded leading-tight">${p.upstream}</span>
+                            <div class="flex gap-2 mb-4">
+                                <span class="speed-tag">${p.speed}</span>
                             </div>
-                            <div class="flex items-start">
-                                <span class="w-24 text-gray-500 font-medium pt-1">Downstream</span>
-                                <span class="flex-1 text-purple-600 font-semibold bg-purple-50 px-2 py-1 rounded leading-tight">${p.downstream}</span>
+                            <div class="space-y-2 text-xs mb-4">
+                                <div class="flex justify-between border-b pb-1">
+                                    <span class="text-gray-400">Upstream (USP):</span>
+                                    <span class="font-bold text-slate-700">${p.usp}</span>
+                                </div>
+                                <div class="flex justify-between border-b pb-1">
+                                    <span class="text-gray-400">Downstream (DSP):</span>
+                                    <span class="font-bold text-slate-700">${p.dsp}</span>
+                                </div>
                             </div>
-                            <div class="pt-2 border-t border-gray-200">
-                                <p class="text-xs text-gray-500 italic">${p.features}</p>
+                            <div class="bg-blue-50/50 p-2 rounded text-[11px] text-slate-600 leading-tight italic">
+                                ${p.features}
                             </div>
                         </div>
                     `;
-                    resultsGrid.appendChild(card);
                 });
             }
         }
 
         function resetFilters() {
-            modelSearch.value = '';
-            categoryFilter.value = 'all';
-            renderProducts();
+            document.getElementById('uspFilter').value = 'all';
+            document.getElementById('dspFilter').value = 'all';
+            document.getElementById('keywordSearch').value = '';
+            render();
         }
 
-        modelSearch.addEventListener('input', renderProducts);
-        categoryFilter.addEventListener('change', renderProducts);
+        ['uspFilter', 'dspFilter', 'keywordSearch'].forEach(id => {
+            document.getElementById(id).addEventListener('input', render);
+        });
 
-        // 初始渲染
-        window.onload = renderProducts;
+        window.onload = () => {
+            render();
+            setInterval(() => { 
+                document.getElementById('clock').innerText = new Date().toLocaleString('zh-TW'); 
+            }, 1000);
+        };
     </script>
 </body>
 </html>
